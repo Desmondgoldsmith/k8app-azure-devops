@@ -1,0 +1,90 @@
+trigger:
+- main
+
+variables:
+  # Azure DevOps service connection for ACR
+  dockerRegistryServiceConnection: 'a41b9e21-7348-4152-b6ca-249e8c78aae9'
+
+  # Azure Container Registry
+  containerRegistry: 'dessydevopsacr.azurecr.io'
+
+  # Azure DevOps build agent
+  vmImageName: 'ubuntu-latest'
+
+  # Unique image tag for each pipeline run
+  tag: '$(Build.BuildId)'
+
+
+stages:
+
+# ============================================================
+# CI - Build and Push Docker Images
+# ============================================================
+- stage: Build
+  displayName: Build and Push Images
+
+  jobs:
+
+  # ==========================================================
+  # Backend
+  # ==========================================================
+  - job: BuildBackend
+    displayName: Build Backend
+
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+
+    - checkout: self
+      displayName: Checkout source code
+
+    - task: Docker@2
+      displayName: Build and push backend image
+      inputs:
+        command: buildAndPush
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: k8app-backend
+        dockerfile: backend/backend.dockerfile
+        buildContext: backend
+        tags: |
+          $(tag)
+
+
+  # ==========================================================
+  # Frontend
+  # ==========================================================
+  - job: BuildFrontend
+    displayName: Build Frontend
+
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+
+    - checkout: self
+      displayName: Checkout source code
+
+    # Temporary diagnostic step.
+    # This lets us verify exactly what Azure DevOps checked out.
+    - script: |
+        echo "===== COMMIT ====="
+        git log -1 --oneline
+
+        echo "===== FRONTEND DOCKERFILE ====="
+        cat frontend/frontend.dockerfile
+
+        echo "===== FRONTEND FILES ====="
+        ls -la frontend
+      displayName: Verify frontend source
+
+    - task: Docker@2
+      displayName: Build and push frontend image
+      inputs:
+        command: buildAndPush
+        containerRegistry: $(dockerRegistryServiceConnection)
+        repository: k8app-frontend
+        dockerfile: frontend/frontend.dockerfile
+        buildContext: frontend
+        tags: |
+          $(tag)
