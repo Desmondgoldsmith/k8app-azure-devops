@@ -1,12 +1,12 @@
 # => Build container
-FROM --platform=$BUILDPLATFORM amd64/node:alpine as builder
+FROM --platform=$BUILDPLATFORM amd64/node:alpine AS builder
 WORKDIR /app
 COPY package.json .
 COPY package-lock.json .
-#COPY yarn.lock .
-RUN yarn
+#COPY package-lock .
+RUN npm ci
 COPY . .
-RUN yarn build
+RUN npm run build
 
 # => Run container
 FROM amd64/nginx:1.15.2-alpine
@@ -39,4 +39,4 @@ ARG BUILDPLATFORM
 RUN echo "Build platform architecture is $BUILDPLATFORM, while target architecture is $TARGETPLATFORM" > /log
 
 # Start Nginx server
-CMD ["bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
+CMD ["bash", "-c", `"/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
