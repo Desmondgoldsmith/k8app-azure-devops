@@ -88,3 +88,40 @@ stages:
         buildContext: frontend
         tags: |
           $(tag)
+
+
+# ============================================================
+# CD - Test AKS Azure Access
+# ============================================================
+- stage: TestAKSAccess
+  displayName: Test AKS Access
+
+  dependsOn: Build
+
+  jobs:
+  - job: TestAKS
+    displayName: Verify AKS access
+
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+
+    - task: AzureCLI@2
+      displayName: Verify AKS access
+      inputs:
+        azureSubscription: 'dessy-aks-deploy'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          echo "===== AZURE IDENTITY ====="
+          az account show \
+            --query "{subscription:name, tenant:tenantId, user:user.name}" \
+            -o table
+
+          echo "===== AKS ====="
+          az aks show \
+            --resource-group devops-aks-lab-rg-sa \
+            --name dessy-aks-cluster \
+            --query "{name:name, location:location, state:provisioningState}" \
+            -o table
