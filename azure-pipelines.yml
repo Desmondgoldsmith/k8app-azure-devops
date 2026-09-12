@@ -107,6 +107,10 @@ stages:
 
     steps:
 
+
+    - checkout: self
+      displayName: Checkout source code
+
     - task: KubeloginInstaller@0
       displayName: Install kubelogin
       inputs:
