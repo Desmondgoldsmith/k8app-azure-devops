@@ -133,6 +133,15 @@ stages:
             --name dessy-aks-cluster \
             --overwrite-existing
 
+          echo "===== WORKING DIRECTORY ====="
+          pwd
+
+          echo "===== REPOSITORY CONTENTS ====="
+          ls -la
+
+          echo "===== HELM CHART ====="
+          ls -la helm/k8app
+
           echo "===== HELM DEPLOYMENT ====="
 
           helm upgrade --install k8app helm/k8app \
