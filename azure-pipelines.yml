@@ -110,6 +110,11 @@ stages:
 
     - task: KubeloginInstaller@0
       displayName: Install kubelogin
+      inputs:
+        gitHubConnection: 'github.com_Desmondgoldsmith'
+      env:
+        USE_AUTHORIZATION_FOR_API_CALL: 'true'
+        
     - task: AzureCLI@2
       displayName: Verify AKS access
       inputs:
