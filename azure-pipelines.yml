@@ -91,22 +91,21 @@ stages:
 
 
 # ============================================================
-# CD - Test AKS Azure Access
+# CD - Deploy to DEV
 # ============================================================
-- stage: TestAKSAccess
-  displayName: Test AKS Access
+- stage: DeployDEV
+  displayName: Deploy to DEV
 
   dependsOn: Build
 
   jobs:
-  - job: TestAKS
-    displayName: Verify AKS access
+  - job: Deploy
+    displayName: Deploy application to AKS
 
     pool:
       vmImage: $(vmImageName)
 
     steps:
-
 
     - task: KubeloginInstaller@0
       displayName: Install kubelogin
@@ -114,31 +113,37 @@ stages:
         gitHubConnection: 'github.com_Desmondgoldsmith'
       env:
         USE_AUTHORIZATION_FOR_API_CALL: 'true'
-        
+
     - task: AzureCLI@2
-      displayName: Verify AKS access
+      displayName: Deploy with Helm
       inputs:
         azureSubscription: 'dessy-aks-deploy'
         scriptType: bash
         scriptLocation: inlineScript
         inlineScript: |
-          echo "===== AZURE IDENTITY ====="
-          az account show \
-            --query "{subscription:name, tenant:tenantId, user:user.name}" \
-            -o table
 
-          echo "===== AKS ====="
-          az aks show \
-            --resource-group devops-aks-lab-rg-sa \
-            --name dessy-aks-cluster \
-            --query "{name:name, location:location, state:provisioningState}" \
-            -o table
-          
-          echo "===== KUBERNETES ====="
+          echo "===== GET AKS CREDENTIALS ====="
 
           az aks get-credentials \
             --resource-group devops-aks-lab-rg-sa \
             --name dessy-aks-cluster \
             --overwrite-existing
 
-          kubectl get nodes
+          echo "===== HELM DEPLOYMENT ====="
+
+          helm upgrade --install k8app helm/k8app \
+            --namespace backend \
+            --set frontend.image.tag=$(Build.BuildId) \
+            --set backend.image.tag=$(Build.BuildId) \
+            --wait \
+            --timeout 5m
+
+          echo "===== DEPLOYMENT STATUS ====="
+
+          kubectl get deployments -n frontend
+          kubectl get deployments -n backend
+
+          echo "===== SERVICES ====="
+
+          kubectl get services -n frontend
+          kubectl get services -n backend
