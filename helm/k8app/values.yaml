@@ -1,0 +1,13 @@
+frontend:
+  replicas: 1
+
+  image:
+    repository: dessydevopsacr.azurecr.io/k8app-frontend
+    tag: "latest"
+
+backend:
+  replicas: 1
+
+  image:
+    repository: dessydevopsacr.azurecr.io/k8app-backend
+    tag: "latest"
