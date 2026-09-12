@@ -107,6 +107,9 @@ stages:
 
     steps:
 
+
+    - task: KubeloginInstaller@0
+      displayName: Install kubelogin
     - task: AzureCLI@2
       displayName: Verify AKS access
       inputs:
