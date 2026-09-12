@@ -125,3 +125,12 @@ stages:
             --name dessy-aks-cluster \
             --query "{name:name, location:location, state:provisioningState}" \
             -o table
+          
+          echo "===== KUBERNETES ====="
+
+          az aks get-credentials \
+            --resource-group devops-aks-lab-rg-sa \
+            --name dessy-aks-cluster \
+            --overwrite-existing
+
+          kubectl get nodes
