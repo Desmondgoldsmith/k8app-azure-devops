@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: k8app-backend-config
+  namespace: backend
+
+data:
+  PROJECT_NAME: {{ .Values.backend.config.projectName | quote }}
+  POSTGRES_SERVER: {{ .Values.backend.config.postgresServer | quote }}
+  POSTGRES_DB: {{ .Values.backend.config.postgresDb | quote }}

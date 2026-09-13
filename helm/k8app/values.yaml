@@ -3,11 +3,20 @@ frontend:
 
   image:
     repository: dessydevopsacr.azurecr.io/k8app-frontend
-    tag: "latest"
+    tag: ""
 
 backend:
   replicas: 1
 
   image:
     repository: dessydevopsacr.azurecr.io/k8app-backend
-    tag: "latest"
+    tag: ""
+
+  config:
+    projectName: "k8app"
+    postgresServer: "dessy-k8app-postgres.postgres.database.azure.com"
+    postgresDb: "app"
+
+  secret:
+    postgresUser: "k8appadmin"
+    postgresPassword: ""
