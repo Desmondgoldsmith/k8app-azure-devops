@@ -6,6 +6,8 @@ from alembic import context
 from sqlalchemy import engine_from_config, pool
 from logging.config import fileConfig
 
+from urllib.parse import quote_plus
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -35,8 +37,13 @@ def get_url():
     password = os.getenv("POSTGRES_PASSWORD", "")
     server = os.getenv("POSTGRES_SERVER", "db")
     db = os.getenv("POSTGRES_DB", "app")
-    return f"postgresql://{user}:{password}@{server}/{db}"
-
+    return (
+        f"postgresql://"
+        f"{quote_plus(user)}:"
+        f"{quote_plus(password)}@"
+        f"{server}/"
+        f"{db}"
+    )
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
