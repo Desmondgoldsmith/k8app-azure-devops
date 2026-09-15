@@ -3,6 +3,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import AnyHttpUrl, BaseSettings, EmailStr, HttpUrl, PostgresDsn, validator
 
+from urllib.parse import quote_plus
 
 class Settings(BaseSettings):
     API_V1_STR: str = "/api"
@@ -37,12 +38,12 @@ class Settings(BaseSettings):
 
         if isinstance(v, str):
             return v
-        return PostgresDsn.build(
-            scheme="postgresql",
-            user=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
+        return (
+            f"postgresql://"
+            f"{quote_plus(values.get('POSTGRES_USER') or '')}:"
+            f"{quote_plus(values.get('POSTGRES_PASSWORD') or '')}@"
+            f"{values.get('POSTGRES_SERVER')}/"
+            f"{values.get('POSTGRES_DB') or ''}"
         )
 
     class Config:
