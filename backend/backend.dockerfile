@@ -14,5 +14,4 @@ EXPOSE 80
 COPY ./app /app
 ENV PYTHONPATH=/app
 
-
-CMD ["bash", "-c", "/app/prestart.sh && exec uvicorn app.main:app --host 0.0.0.0 --port 80"]
+CMD ["bash", "-c", "bash /app/prestart.sh && exec uvicorn app.main:app --host 0.0.0.0 --port 80"]
