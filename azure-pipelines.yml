@@ -126,6 +126,8 @@ stages:
         scriptLocation: inlineScript
         inlineScript: |
 
+          set -e
+
           echo "===== GET AKS CREDENTIALS ====="
 
           az aks get-credentials \
