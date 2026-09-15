@@ -2,18 +2,19 @@ trigger:
 - main
 
 variables:
-  # Azure DevOps service connection for ACR
-  dockerRegistryServiceConnection: 'a41b9e21-7348-4152-b6ca-249e8c78aae9'
+- group: k8app-dev-secrets
 
-  # Azure Container Registry
-  containerRegistry: 'dessydevopsacr.azurecr.io'
+- name: dockerRegistryServiceConnection
+  value: 'a41b9e21-7348-4152-b6ca-249e8c78aae9'
 
-  # Azure DevOps build agent
-  vmImageName: 'ubuntu-latest'
+- name: containerRegistry
+  value: 'dessydevopsacr.azurecr.io'
 
-  # Unique image tag for each pipeline run
-  tag: '$(Build.BuildId)'
+- name: vmImageName
+  value: 'ubuntu-latest'
 
+- name: tag
+  value: '$(Build.BuildId)'
 
 stages:
 
@@ -150,6 +151,7 @@ stages:
             --namespace backend \
             --set frontend.image.tag=$(Build.BuildId) \
             --set backend.image.tag=$(Build.BuildId) \
+            --set backend.secret.postgresPassword="$(POSTGRES_PASSWORD)" \
             --wait \
             --timeout 5m
 
